@@ -40,3 +40,29 @@ books内存储的是书本下载的位置
 pyinstaller -F -w tools/Auto-Novel-Fetcher/app.py
 ```
 ---
+## Web
+### Lotery
+```
+简介：基于flask的简单抽奖web
+```
+- 项目展示
+![加载失败](./README_pic/lottery_pic.png "搜索页面")
+- 
+- 依赖库下载
+```python
+pip install requests
+pip install lxml
+pip install flask
+```
+#### 项目内容详情
+本项目主页是就flask的web框架制作的一个简易路由抽奖画面
+，内部动态数据由王者荣耀官网的动态获取
+- 📄 app.py  
+- 📄 hero.py                 
+- 📁 templates/                 
+  - 📄 index.html              
+```python
+本项目主要路由启动在app.py内进行
+hero.py为网页数据的读取
+启动项目后浏览器访问http://127.0.0.1:5000/index进入页面内容
+```

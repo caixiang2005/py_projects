@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>王者荣耀抽奖系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #e94560;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+        }
+        .carousel-container {
+            width: 90%;
+            max-width: 1200px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 40px;
+        }
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            animation: scroll 30s linear infinite;
+            width: max-content;
+        }
+        .carousel-track:hover { animation-play-state: paused; }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .hero-card {
+            width: 120px;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .hero-card:hover { transform: scale(1.1); }
+        .hero-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #e94560;
+            object-fit: cover;
+        }
+        .hero-card p {
+            color: #fff;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        .lottery-area {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .lottery-btn {
+            display: inline-block;
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            color: #fff;
+            background: linear-gradient(45deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+        .lottery-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(233, 69, 96, 0.6);
+        }
+        .result {
+            margin-top: 30px;
+            color: #fff;
+        }
+        .result h2 {
+            font-size: 2rem;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .result img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #ffd700;
+            margin-top: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-crown"></i> 王者荣耀英雄抽奖</h1>
+    
+    <div class="carousel-container">
+        <div class="carousel-track">
+            {% for i in range(hero|length) %}
+            <div class="hero-card">
+                <img src="{{ hero_img_url[i] }}">
+                <p>{{ hero[i] }}</p>
+            </div>
+            {% endfor %}
+            {% for i in range(hero|length) %}
+            <div class="hero-card">
+                <img src="{{ hero_img_url[i] }}">
+                <p>{{ hero[i] }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="lottery-area">
+        <a href="/choujiang" class="lottery-btn">
+            <i class="fas fa-gift"></i> 开始抽奖
+        </a>
+        
+        {% if h %}
+        <div class="result">
+            <h2>恭喜抽中：{{ h }}</h2>
+            <img src="{{ img_url }}">
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
