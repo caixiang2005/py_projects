@@ -19,6 +19,7 @@ web等内容进行学习
 pip install requests
 pip install lxml
 pip install PyQt6
+pip install pyinstaller
 ```
 #### 项目内容详情
 项目主要是基于request，lxml这些技术栈进行，对数据进行学习下载浏览
@@ -34,4 +35,8 @@ app.py内为主要的文件启动页面
 Auto_Novel_Fetcher.py 内为细节的逻辑处理部分
 books内存储的是书本下载的位置
 ```
-   
+项目完成后进行exe可执行程序的打包pyinstaller
+```bash
+pyinstaller -F -w tools/Auto-Novel-Fetcher/app.py
+```
+---
