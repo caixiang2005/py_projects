@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>永劫无间点赞系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Microsoft YaHei', Arial, sans-serif; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 { 
+            text-align: center; 
+            color: #fff; 
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        .container { 
+            display: flex; 
+            gap: 40px; 
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+        .left { 
+            flex: 1; 
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .right { 
+            flex: 1.2; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .left-title {
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-list-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .hero-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .hero-row:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        .hero-rank {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            width: 40px;
+        }
+        .hero-name {
+            flex: 1;
+            color: #fff;
+            font-size: 16px;
+        }
+        .hero-likes {
+            color: #ff6b6b;
+            font-size: 18px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: right;
+        }
+        .like-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+            color: white;
+            padding: 6px 15px;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 13px;
+            margin-left: 15px;
+            transition: all 0.3s;
+        }
+        .like-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(255,107,107,0.4);
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .page-btn {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .page-btn:hover:not(:disabled) {
+            background: rgba(255,255,255,0.4);
+        }
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .page-info {
+            color: #fff;
+            font-size: 14px;
+        }
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            width: 100%;
+        }
+        .podium-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .step-base {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .rank-2 .step-base { width: 120px; }
+        .rank-1 .step-base { width: 160px; }
+        .rank-3 .step-base { width: 120px; }
+        
+        .rank-2 .step-base { height: 180px; }
+        .rank-1 .step-base { height: 260px; }
+        .rank-3 .step-base { height: 140px; }
+        
+        .step-img {
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid;
+            position: absolute;
+        }
+        .rank-2 .step-img { 
+            width: 100px;
+            height: 100px;
+            bottom: 30px;
+            border-color: #c0c0c0; 
+            box-shadow: 0 0 20px rgba(192,192,192,0.6);
+        }
+        .rank-1 .step-img { 
+            width: 140px;
+            height: 140px;
+            bottom: 50px;
+            border-color: #ffd700; 
+            box-shadow: 0 0 30px rgba(255,215,0,0.8);
+        }
+        .rank-3 .step-img { 
+            width: 90px;
+            height: 90px;
+            bottom: 20px;
+            border-color: #cd7f32; 
+            box-shadow: 0 0 20px rgba(205,127,50,0.6);
+        }
+        .step-block {
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        .rank-2 .step-block {
+            height: 180px;
+            background: linear-gradient(180deg, #c0c0c0, #808080);
+        }
+        .rank-1 .step-block {
+            height: 260px;
+            background: linear-gradient(180deg, #ffd700, #b8860b);
+        }
+        .rank-3 .step-block {
+            height: 140px;
+            background: linear-gradient(180deg, #cd7f32, #8b4513);
+        }
+        .step-crown {
+            font-size: 36px;
+            position: absolute;
+            top: -30px;
+        }
+        .rank-1 .step-crown { 
+            font-size: 48px;
+            top: -40px;
+        }
+        .step-name {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: absolute;
+            bottom: 10px;
+        }
+        .rank-1 .step-name { font-size: 18px; }
+        .step-likes {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            position: absolute;
+            bottom: -30px;
+        }
+        .rank-1 .step-likes { font-size: 20px; bottom: -35px; }
+        .rank-title {
+            color: #ffd700;
+            font-size: 26px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🏆 永劫无间英雄点赞系统 🏆</h1>
+    <div class="container">
+        <div class="left">
+            <div class="left-title">📋 英雄排行榜</div>
+            <div class="hero-list-container" id="heroList">
+                {% for k,v in sorted_hero %}
+                <div class="hero-row" data-rank="{{ loop.index }}">
+                    <span class="hero-rank">{{ loop.index }}</span>
+                    <span class="hero-name">{{ k }}</span>
+                    <span class="hero-likes">❤️ {{ v[0] }}</span>
+                    <form method="POST" action="/like" style="display:inline;">
+                        <input type="hidden" name="name" value="{{ k }}">
+                        <button type="submit" class="like-btn">点赞</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="pagination">
+                <button class="page-btn" id="prevBtn" onclick="changePage(-1)">上一页</button>
+                <span class="page-info" id="pageInfo">1 / 1</span>
+                <button class="page-btn" id="nextBtn" onclick="changePage(1)">下一页</button>
+            </div>
+        </div>
+        <div class="right">
+            <div class="rank-title">🥇 排行榜 TOP3 🥇</div>
+            <div class="podium">
+                {% for k,v in top3 %}
+                <div class="podium-step {% if loop.index == 1 %}rank-2{% elif loop.index == 2 %}rank-1{% else %}rank-3{% endif %}">
+                    <div class="step-crown">
+                        {% if loop.index == 2 %}👑
+                        {% elif loop.index == 1 %}🥈
+                        {% else %}🥉{% endif %}
+                    </div>
+                    <div class="step-base">
+                        {% if v[1] %}
+                        <img class="step-img" src="{{ v[1] }}" alt="{{ k }}">
+                        {% else %}
+                        <img class="step-img" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMwIiBoZWlnaHQ9IjEzMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI2NSIgY3k9IjY1IiByPSI2NSIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg==" alt="{{ k }}">
+                        {% endif %}
+                        <div class="step-block"></div>
+                    </div>
+                    <div class="step-name">{{ k }}</div>
+                    <div class="step-likes">{{ v[0] }} 赞</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const itemsPerPage = 10;
+        let currentPage = 1;
+        const heroRows = document.querySelectorAll('.hero-row');
+        const totalItems = heroRows.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        function showPage(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            
+            heroRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = 'flex';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('pageInfo').textContent = `${page} / ${totalPages}`;
+            document.getElementById('prevBtn').disabled = page === 1;
+            document.getElementById('nextBtn').disabled = page === totalPages;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            showPage(currentPage);
+        }
+
+        showPage(1);
+    </script>
+</body>
+</html>
