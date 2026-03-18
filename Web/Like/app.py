@@ -72,6 +72,29 @@ def like():
     save_hero(hero)
     return redirect(url_for('index'))
 
+#搜索框路由
+@app.route('/search',methods=['GET'])
+def search():
+    keyword = request.args.get('keyword','').strip()
+    hero = load_hero()
+    res = {}
+    if keyword:
+        for hero_name, hero_info in hero.items():
+            if keyword.lower() in hero_name.lower():
+                res[hero_name] = {
+                    'likes':hero_info[0],
+                    'img':hero_info[1] if len(hero_info) > 1 else ''
+                }
+ 
+    sorted_hero = get_sorted_hero()
+    top3 = sorted_hero[:3]
+    # 调整TOP3展示顺序（第二名放中间，第一名放中间最上面）
+    if len(top3) >= 3:
+        top3_display = [top3[1], top3[0], top3[2]]
+    else:
+        top3_display = top3
+    return render_template("index.html",hero=hero,sorted_hero=sorted_hero,top3=top3_display,search_res=res,search_key=keyword)
+
 if __name__ == "__main__":
     init_hero()
     app.run(debug=True)

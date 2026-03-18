@@ -74,6 +74,7 @@ templates内为超文本内容存放的位置
 ```
 - 项目展示
 ![加载失败](./README_pic/like_pic.png "搜索页面")
+![加载失败](./README_pic/like_s_pic.png "搜索页面")
 - 依赖库下载
 ```python
 pip install flask
@@ -81,6 +82,7 @@ pip install flask
 #### 项目内容详情
 内部的数据根据王者荣耀官网的动态获取，我直接写入数据了，建议对内容进行爬取
 数据内容动态存储在data.json文件内
+内包含主路由接口，搜索框接口以及点赞部分的接口
 - 📄 app.py                 
 - 📁 templates/                 
   - 📄 index.html    
