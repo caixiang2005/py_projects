@@ -105,3 +105,27 @@ def phone(p,headers=headers):
     else:
         return "该号码不存在"
 # print(phone('15180698310'))
+
+def idCard(id,headers=headers):
+    """
+    id:身份证号
+
+    return:{'gender': 性别, 'birth': 出生日期, 'birth_loc': 生源地}
+    """
+    if len(id) != 18:
+        return "输入身份证格式错误"
+    
+    url = f"https://qq.ip138.com/idsearch/index.asp?userid={id}&action=idcard"
+
+    response = req.get(url,headers=headers)
+    response.encoding = response.apparent_encoding
+    try:
+        e = etree.HTML(response.text)
+        # gender = e.xpath("")
+        # birth_loc = e.xpath("")
+        inf = e.xpath("//td/p/text()")[1:]
+        return {'gender':inf[1],'birth':inf[3],'birth_loc':inf[5]}
+    except:
+        return {}
+
+# print(idCard("360421200501170414"))
