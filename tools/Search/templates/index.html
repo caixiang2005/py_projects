@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>查询工具</title>
+</head>
+<body>
+    <form method="GET">
+        <input type="text" name="ip">
+        <button type="submit">搜索IP信息</button>
+    </form>
+    {% if ip %}
+        {{ip}}
+    {% endif %}
+    <form method="GET">
+        <input type="text" name="w">
+        <button type="submit">搜索天气信息</button>
+    </form>
+    {% if w %}
+        {{w}}
+    {% endif %}
+    <form method="GET">
+        <input type="text" name="tp">
+        <button type="submit">搜索电话信息</button>
+    </form>
+    {% if tp %}
+        {{tp}}
+    {% endif %}
+    <form method="GET">
+        <input type="text" name="id">
+        <button type="submit">搜索身份证信息</button>
+    </form>
+    {% if id %}
+        {{id}}
+    {% endif %}
+</body>
+</html>

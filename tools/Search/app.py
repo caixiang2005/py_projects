@@ -28,17 +28,23 @@ def ip_search(ip,headers=headers):
     ip:str
     headers:dic
     """
-    url_ip = f"https://www.ip138.com/iplookup.php?ip={ip}&action=2"
-    response_ip = req.get(url_ip,headers=headers)
-    response_ip.encoding = response_ip.apparent_encoding # 自动匹配编码
+    try:
+        url_ip = f"https://www.ip138.com/iplookup.php?ip={ip}&action=2"
+        response_ip = req.get(url_ip,headers=headers)
+        response_ip.encoding = response_ip.apparent_encoding # 自动匹配编码
 
-    e = etree.HTML(response_ip.text)
-    if e.xpath('//td/span/text()'):
-        print(e.xpath('//td/span/text()')[0])
-    else:
-        print("ip地址格式错误或者不存在该ip")
-
-# ip_search(ip='123.9.8.7')
+        e = etree.HTML(response_ip.text)
+        if e.xpath('//td/span/text()'):
+            return e.xpath('//td/span/text()')[0]
+        else:
+            return "ip地址格式错误或者不存在该ip"
+    except req.exceptions.Timeout:
+        return "网络超时，请检查网络连接"
+    except req.exceptions.ConnectionError:
+        return "连接失败，检查网络或目标网络是否可用"
+    except Exception as e:
+        return f"未知错误{e}"
+# print(ip_search(ip='123.9.8.7'))
 
 # 查询天气
 def weather_search(loc,headers=headers,url=url):
@@ -47,34 +53,40 @@ def weather_search(loc,headers=headers,url=url):
     headers:dic
     url:str
     """
-    url_w = f"https://www.ks121.com/search/?location={loc}"
-    response_w = req.get(url_w,headers=headers)
-    response_w.encoding = response_w.apparent_encoding
+    try:
+        url_w = f"https://www.ks121.com/search/?location={loc}"
+        response_w = req.get(url_w,headers=headers)
+        response_w.encoding = response_w.apparent_encoding
 
-    soup = BeautifulSoup(response_w.text,"html.parser")
-    table = soup.find("table")
-    all_tr = table.find_all("tr")
+        soup = BeautifulSoup(response_w.text,"html.parser")
+        table = soup.find("table")
+        all_tr = table.find_all("tr")
 
-    loc = all_tr[0].find("a").text if all_tr[0].find("a") else "地点未知"
-    week = all_tr[1].select_one("p.week").text if all_tr[1].select_one("p.week") else "未知"
-    img_url = []
-    for v in all_tr[1].select("img"):
-        if v:
-            img_url.append(url+v['src'])
+        loc = all_tr[0].find("a").text if all_tr[0].find("a") else "地点未知"
+        week = all_tr[1].select_one("p.week").text if all_tr[1].select_one("p.week") else "未知"
+        img_url = []
+        for v in all_tr[1].select("img"):
+            if v:
+                img_url.append(url+v['src'])
 
-    w = all_tr[1].select_one('span').text if all_tr[1].select_one('span') else "天气未知"
-    temp = all_tr[1].find_all('p')[-2].text if '℃ ' in all_tr[1].find_all('p')[-2].text  else "温度未知"
-    wind = all_tr[1].find_all('p')[-1].text if all_tr[1].find_all('p')[-1].text else '风速不明'
-    res = {
-        'location':loc,
-        "week":week,
-        "weather":w,
-        "weather_icons":img_url,
-        'temperature':temp,
-        'wind_speed':wind,
-    }
-    return res
-
+        w = all_tr[1].select_one('span').text if all_tr[1].select_one('span') else "天气未知"
+        temp = all_tr[1].find_all('p')[-2].text if '℃ ' in all_tr[1].find_all('p')[-2].text  else "温度未知"
+        wind = all_tr[1].find_all('p')[-1].text if all_tr[1].find_all('p')[-1].text else '风速不明'
+        res = {
+            'location':loc,
+            "week":week,
+            "weather":w,
+            "weather_icons":img_url,
+            'temperature':temp,
+            'wind_speed':wind,
+        }
+        return res
+    except req.exceptions.Timeout:
+        return "网络超时，请检查网络连接"
+    except req.exceptions.ConnectionError:
+        return "连接失败，检查网络或目标网络是否可用"
+    except Exception as e:
+        return f"出现未知错误{e}"
 # print(weather_search("柴桑区"))
 
 # 电话归属
@@ -86,46 +98,61 @@ def phone(p,headers=headers):
     server_img:服务厂商图片
     }
     """
-    if p[0] == '1' and len(p) == 11:
-        url_p = f"https://www.haoshudi.com/{p}.htm"
+    try:
+        if p[0] == '1' and len(p) == 11:
+            url_p = f"https://www.haoshudi.com/{p}.htm"
 
-        response_p = req.get(url_p,headers=headers)
-        response_p.encoding = response_p.apparent_encoding
+            response_p = req.get(url_p,headers=headers)
+            response_p.encoding = response_p.apparent_encoding
 
-        e = etree.HTML(response_p.text)
-        try:
-            loc = e.xpath('//span/text()')
-            loc_ser = e.xpath("//a[@class='link']/text()")[:2]
-            loc = loc_ser[0] + loc[-13] #地点信息
-            server = loc_ser[1] #服务商信息
-            server_img = 'https://www.haoshudi.com' + e.xpath("//span/img/@src")[0]
-            return {'location':loc,'server':server,'server_img':server_img}
-        except:
-            return {'location':'位置没找到','server':'未找到','server_img':'未找到'}
-    else:
-        return "该号码不存在"
+            e = etree.HTML(response_p.text)
+            try:
+                loc = e.xpath('//span/text()')
+                loc_ser = e.xpath("//a[@class='link']/text()")[:2]
+                loc = loc_ser[0] + loc[-13] #地点信息
+                server = loc_ser[1] #服务商信息
+                server_img = 'https://www.haoshudi.com' + e.xpath("//span/img/@src")[0]
+                return {'location':loc,'server':server,'server_img':server_img}
+            except:
+                return {'location':'位置没找到','server':'未找到','server_img':'未找到'}
+        else:
+            return "该号码不存在"
+    except req.exceptions.Timeout:
+        return "网络超时，请检查网络连接"
+    except req.exceptions.ConnectionError:
+        return "连接失败，检查网络或目标网络是否可用"
+    except Exception as e:
+        return f"出现未知错误{e}"
 # print(phone('15180698310'))
 
+# 身份证信息
 def idCard(id,headers=headers):
     """
     id:身份证号
 
     return:{'gender': 性别, 'birth': 出生日期, 'birth_loc': 生源地}
     """
-    if len(id) != 18:
-        return "输入身份证格式错误"
-    
-    url = f"https://qq.ip138.com/idsearch/index.asp?userid={id}&action=idcard"
-
-    response = req.get(url,headers=headers)
-    response.encoding = response.apparent_encoding
     try:
-        e = etree.HTML(response.text)
-        # gender = e.xpath("")
-        # birth_loc = e.xpath("")
-        inf = e.xpath("//td/p/text()")[1:]
-        return {'gender':inf[1],'birth':inf[3],'birth_loc':inf[5]}
-    except:
-        return {}
+        if len(id) != 18:
+            return "输入身份证格式错误"
+        
+        url = f"https://qq.ip138.com/idsearch/index.asp?userid={id}&action=idcard"
 
+        response = req.get(url,headers=headers)
+        response.encoding = response.apparent_encoding
+        try:
+            e = etree.HTML(response.text)
+            # gender = e.xpath("")
+            # birth_loc = e.xpath("")
+            inf = e.xpath("//td/p/text()")[1:]
+            return {'gender':inf[1],'birth':inf[3],'birth_loc':inf[5]}
+        except:
+            return {}
+    except req.exceptions.Timeout:
+        return "网络超时，请检查网络连接"
+    except req.exceptions.ConnectionError:
+        return "连接失败，检查网络或目标网络是否可用"
+    except Exception as e:
+        return f"出现未知错误{e}"
 # print(idCard("360421200501170414"))
+
