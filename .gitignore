@@ -2,3 +2,6 @@
 __pycache__/
 .vscode/
 books/**/*.txt
+
+# 敏感配置文件
+tools/Course-Fetcher/config.json
